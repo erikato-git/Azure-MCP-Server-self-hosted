@@ -6,14 +6,8 @@
         },
         "remote-mcp-server": {
             "type": "http",
-            "url": "https://${input:functionapp-domain}/mcp",
+            "url": "https://func-mcp-tbgbe7twyg3ii.azurewebsites.net/mcp"
         }
     },
-    "inputs": [
-        {
-            "type": "promptString",
-            "id": "functionapp-domain",
-            "description": "The domain of the function app."
-        }
-    ]
+    "inputs": []
 }

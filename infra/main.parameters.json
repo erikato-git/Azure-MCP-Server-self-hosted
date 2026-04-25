@@ -8,14 +8,14 @@
     "location": {
       "value": "${AZURE_LOCATION}"
     },
-    "principalId": {
-      "value": "${AZURE_PRINCIPAL_ID}"
-    },
-    "vnetEnabled": {
+"vnetEnabled": {
       "value": "${VNET_ENABLED}"
     },
     "serviceManagementReference": {
       "value": "${SERVICE_MANAGEMENT_REFERENCE}"
+    },
+    "resourceGroupName": {
+      "value": "${AZURE_RESOURCE_GROUP_NAME}"
     },
      "preAuthorizedClientIds": {
       "value": "${PRE_AUTHORIZED_CLIENT_IDS}"
