@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace ModelContextProtocol;
+namespace QuickstartWeatherServer.Helpers;
 
 internal static class HttpClientExt
 {

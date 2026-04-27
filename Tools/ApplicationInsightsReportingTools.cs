@@ -3,6 +3,7 @@ using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 using Microsoft.AspNetCore.Http;
 using ModelContextProtocol.Server;
+using QuickstartWeatherServer.Helpers;
 using System.ComponentModel;
 using System.Net.Http.Headers;
 using System.Text;

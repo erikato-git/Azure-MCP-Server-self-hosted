@@ -15,6 +15,7 @@ Open-source template demonstrating how to host a self-managed Azure MCP server w
 | Secrets (local) | `local.settings.json` / `.env` (never committed) | Standard Functions dev experience |
 | Secrets (Azure) | Azure Key Vault (provisioned via Bicep) | All secrets and config referencing Key Vault |
 | IaC | Bicep via `azd` | `azd up` single-command deploy |
+| Observability | Azure Monitor OpenTelemetry distro (`Azure.Monitor.OpenTelemetry.AspNetCore`) | First-class AAD auth, OTel standard, auto-instruments HTTP |
 | .NET version | .NET 8 (upgrade path to .NET 9 / .NET 10 planned) | Current LTS, in-place upgrade is low-risk |
 
 ## Tool authoring pattern
@@ -92,6 +93,41 @@ MY_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=my-secret)
 
 The Function App's Managed Identity is granted `Key Vault Secrets User` role on the vault.
 
+## Observability
+
+Application Insights telemetry is collected via the **Azure Monitor OpenTelemetry distro** (`Azure.Monitor.OpenTelemetry.AspNetCore`). Configured in [Program.cs](Program.cs) with `UseAzureMonitor`.
+
+### What is collected automatically
+
+| Category | Examples |
+|---|---|
+| Incoming HTTP requests | Every call to `/mcp`, `/api/healthz`, `/authcomplete` — URL, method, status code, duration |
+| Outbound HTTP dependencies | Calls to Microsoft Graph, ARM, Application Insights, Log Analytics APIs — URL, status code, duration |
+| Exceptions | Unhandled exceptions anywhere in the request pipeline |
+| Logs | All `ILogger` output at Warning level and above (configurable) |
+
+### Authentication
+
+`disableLocalAuth: true` is set on the Application Insights resource — ingestion only accepts AAD-authenticated telemetry. The Managed Identity (`OVERRIDE_USE_MI_FIC_ASSERTION_CLIENTID`) is used as the credential. The Managed Identity is pre-assigned `Monitoring Metrics Publisher` on App Insights via `infra/app/rbac.bicep`.
+
+### Local development
+
+If `APPLICATIONINSIGHTS_CONNECTION_STRING` is absent (i.e. when running locally), `UseAzureMonitor` is not registered at all — `Program.cs` guards the entire OTel setup behind a null-check on that variable. To enable local telemetry, add the connection string to `local.settings.json`.
+
+### Custom telemetry
+
+[Helpers/McpTelemetry.cs](Helpers/McpTelemetry.cs) provides an `ActivitySource` and `Meter` registered with the OTel pipeline:
+
+```csharp
+// Custom trace span
+using var activity = McpTelemetry.ActivitySource.StartActivity("MyOperation");
+activity?.SetTag("tool", "ListResourceGroups");
+
+// Custom metric
+var counter = McpTelemetry.Meter.CreateCounter<long>("mcp.tool.invocations");
+counter.Add(1, new KeyValuePair<string, object?>("tool", "ListResourceGroups"));
+```
+
 ## Infrastructure (Bicep / azd)
 
 Key Bicep modules:
@@ -125,6 +161,7 @@ Pre-authorize Claude Code as MCP client (VS Code client ID):
 ```bash
 azd env set PRE_AUTHORIZED_CLIENT_IDS aebc6443-996d-45c2-90f0-388ff96faa56
 ```
+(`aebc6443-996d-45c2-90f0-388ff96faa56` is the well-known Entra application ID for the VS Code first-party app, which both Claude Code and GitHub Copilot authenticate through. Pre-authorizing it allows those clients to call the MCP server without requiring an admin consent prompt.)
 
 Register the `Microsoft.App` resource provider before first deploy:
 ```bash
@@ -134,7 +171,6 @@ az provider register --namespace 'Microsoft.App'
 ## Planned work (not yet implemented)
 
 - **Azure Key Vault Bicep module** — provision Key Vault, wire RBAC, add Key Vault references in app settings
-- **ArmTools.cs** — tools for Azure Resource Manager (list resource groups, list resources, etc.)
 - **KeyVaultTools.cs** — tools for Key Vault operations (list/get secrets, keys, certs)
 - **GitHub Actions CI/CD** — `azd pipeline config` + workflow for automated deploy on push to main
 - **.NET 9 / .NET 10 upgrade** — update `TargetFramework` in `.csproj` and `runtimeVersion` in Bicep when ready
@@ -142,11 +178,16 @@ az provider register --namespace 'Microsoft.App'
 ## File map
 
 ```
-Program.cs                  — app entry point, MCP server setup, DI registration
+Program.cs                  — app entry point, MCP server setup, DI + OTel registration
 Tools/
   WeatherTools.cs           — sample: stateless tool, no auth required
   UserInfoTools.cs          — reference: OBO flow to call Microsoft Graph
+  ListResourceGroupServicesTools.cs — ARM: list resource groups and resources
+  ApplicationInsightsReportingTools.cs — App Insights report generation via KQL
   HttpClientExt.cs          — helper: typed JSON reads from HttpClient
+Helpers/
+  OboCredentialHelper.cs    — OBO credential creation + error JSON helpers
+  McpTelemetry.cs           — ActivitySource and Meter for custom telemetry
 infra/
   main.bicep                — root Bicep template (subscription scope)
   app/entra.bicep           — Entra app registration

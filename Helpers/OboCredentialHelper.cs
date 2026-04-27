@@ -2,7 +2,7 @@ using Azure.Identity;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
-namespace QuickstartWeatherServer.Tools;
+namespace QuickstartWeatherServer.Helpers;
 
 internal static class OboCredentialHelper
 {
