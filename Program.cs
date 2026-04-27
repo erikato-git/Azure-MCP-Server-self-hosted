@@ -15,7 +15,8 @@ builder.Services.AddMcpServer()
         options.Stateless = true;
     })
     .WithTools<WeatherTools>()
-    .WithTools<UserInfoTools>();
+    .WithTools<UserInfoTools>()
+    .WithTools<ListResourceGroupServicesTools>();
 
 builder.Logging.AddConsole(options =>
 {

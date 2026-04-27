@@ -161,6 +161,10 @@ azure.yaml                  — azd service definition
 .vscode/mcp.json            — MCP server registrations for VS Code
 ```
 
+## Documentation conventions
+
+- Never write actual Azure tenant IDs, subscription IDs, or other personal identifiers directly into any `.md` files — always use angle-bracket placeholders such as `<your-tenant-id>` and `<your-subscription-id>`
+
 ## Coding conventions
 
 - No comments unless the *why* is non-obvious
