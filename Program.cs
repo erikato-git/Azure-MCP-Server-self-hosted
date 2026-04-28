@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.AspNetCore;
+using QuickstartWeatherServer.Extensions;
 using QuickstartWeatherServer.Helpers;
 using QuickstartWeatherServer.Tools;
 using System.Net.Http.Headers;
@@ -42,6 +43,7 @@ builder.Logging.AddConsole(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMcpRateLimiting();
 
 builder.Services.AddSingleton(_ =>
 {
@@ -51,6 +53,8 @@ builder.Services.AddSingleton(_ =>
 });
 
 var app = builder.Build();
+
+app.UseRateLimiter();
 
 // Add root endpoint
 app.MapGet("/", () => "Custom handler is ready and running.");
@@ -65,6 +69,6 @@ app.MapGet("/authcomplete", () => Results.Content(
 ));
 
 // Map MCP endpoints
-app.MapMcp(pattern: "/mcp");
+app.MapMcp(pattern: "/mcp").RequireMcpRateLimiting();
 
 await app.RunAsync();
