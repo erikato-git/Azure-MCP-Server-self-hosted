@@ -1,5 +1,16 @@
 # AI-Powered IT Operational Insights for Azure — Just Ask in Plain Language
-This project gives companies an AI assistant — powered by Claude or GitHub Copilot — that can actually *do things* with an Azure environment. Ask it questions in plain language. Get real answers from real data. No dashboards, no manual log searches, no waiting for a developer to run a report.
+
+[![LinkedIn](https://img.shields.io/badge/Built%20by-Erik%20K%20Ipsen-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/erik-k-ipsen/)
+
+This project gives companies a fully customizable AI assistant — powered by Claude or GitHub Copilot — that connects directly to Azure. Ask questions in plain language, get real answers from real data. No expertise needed. Built on a controlled, secure foundation that the company owns and manages.
+
+- [Built on an Official Microsoft Template](#built-on-an-official-microsoft-template)
+- [What Problem Does This Solve?](#what-problem-does-this-solve)
+- [Who Is This For?](#who-is-this-for)
+- [Security: Data Stays in Company Control](#security-data-stays-in-company-control)
+- [Tools Already in Place](#what-can-it-do-today)
+- [Build Customized Azure Tools for the Company](#build-custom-azure-tools--made-for-the-companys-needs)
+- [How Does It Work?](#how-does-it-work-the-short-version)
 
 ---
 
@@ -27,8 +38,7 @@ The AI answers with real data, pulled live from the Azure infrastructure, using 
 
 This template is a great fit for:
 
-- **Software companies** that run their products on Azure and want developers to stay in flow — letting AI extract operational insights and troubleshoot incidents without leaving the code editor
-- **Consulting firms** that manage multiple client Azure environments and want teams to stay in flow — letting AI extract operational insights and troubleshoot incidents across client systems without switching context
+- **Software companies and consulting firms** on Azure — keeping developers and teams in flow by letting AI extract operational insights and troubleshoot incidents, without leaving the code editor or switching between client environments
 - **Manufacturing and enterprise companies** that use Azure for internal systems and want team leads or operations staff to access data without needing Azure expertise
 
 ---
@@ -62,7 +72,7 @@ This is an industry-standard security pattern called "On-Behalf-Of" — the AI n
 
 ---
 
-## What Can It Do Today?
+## Tools Already in Place
 
 ### Application Insights Report Tool
 
@@ -114,9 +124,9 @@ These tools give anyone a plain-language view of what is running in Azure:
 
 ---
 
-## Build Custom Azure Tools — Made for the Company's Needs
+## Build Customized Azure Tools for the Company
 
-The tools above are just the beginning. One of the core benefits of this project is that it is fully customizable — a development team can build new tools that connect to any Azure service or internal system, and deploy them in a controlled, secure environment that the company owns and manages. Here are some ideas focused on IT operations:
+The tools above are just the beginning. A development team can build new tools that connect to any Azure service or internal system. Here are some ideas focused on IT operations:
 
 ### Cost Monitoring
 > *"What did we spend on Azure last month, broken down by team?"*
@@ -175,3 +185,4 @@ The server is built on an open standard called **MCP (Model Context Protocol)**,
 ## Technical README
 
 The original technical README with setup instructions, deployment steps, and architecture details is available in [docs/readme-original.md](docs/readme-original.md).
+
