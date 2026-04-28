@@ -87,6 +87,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
+// [BICEP-01] User-assigned Managed Identity acts as the federated credential for the Entra app (replaces a client secret).
 // User assigned managed identity to be used by the MCP function app to reach storage and other dependencies
 // Assign specific roles to this identity in the RBAC module
 module mcpUserAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
@@ -241,6 +242,7 @@ module storagePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = if (vnetEnab
   }
 }
 
+// [BICEP-09] Log Analytics workspace backs Application Insights and is the actual KQL query target used by the tool.
 // Monitor application with Azure Monitor - Log Analytics and Application Insights
 module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.7.0' = {
   name: '${uniqueString(deployment().name, location)}-loganalytics'
@@ -253,6 +255,7 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.7.0' = {
   }
 }
  
+// [BICEP-10] Application Insights linked to the Log Analytics workspace; disableLocalAuth forces AAD-only ingestion.
 module monitoring 'br/public:avm/res/insights/component:0.4.1' = {
   name: '${uniqueString(deployment().name, location)}-appinsights'
   scope: rg

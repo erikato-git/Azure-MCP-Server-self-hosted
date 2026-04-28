@@ -65,6 +65,7 @@ var queueSettings = enableQueue ? { AzureWebJobsStorage__queueServiceUri: stg.pr
 var tableSettings = enableTable ? { AzureWebJobsStorage__tableServiceUri: stg.properties.primaryEndpoints.table } : {}
 var fileSettings = enableFile ? { AzureWebJobsStorage__fileServiceUri: stg.properties.primaryEndpoints.file } : {}
 
+// [BICEP-08] App settings consumed by OboCredentialHelper at runtime (tenant + MI clientId for the FIC assertion).
 // Create auth-specific app settings when auth parameters are provided
 var authAppSettings = (!empty(authIdentifierUri) && !empty(identityClientId)) ? {
   WEBSITE_AUTH_PRM_DEFAULT_WITH_SCOPES: '${authIdentifierUri}/user_impersonation'
@@ -140,6 +141,7 @@ module mcp 'br/public:avm/res/web/site:0.15.1' = {
   }
 }
 
+// [BICEP-06] Easy Auth (App Service Authentication v2) gates /mcp: returns 401 + PRM challenge when no token, validates AAD JWT when present.
 // Configure App Service Authentication v2 (if auth parameters are provided)
 resource authSettings 'Microsoft.Web/sites/config@2023-12-01' = if (!empty(authClientId) && !empty(authTenantId)) {
   name: '${name}/authsettingsV2'
@@ -167,6 +169,7 @@ resource authSettings 'Microsoft.Web/sites/config@2023-12-01' = if (!empty(authC
         registration: {
           openIdIssuer: '${environment().authentication.loginEndpoint}${authTenantId}/v2.0'
           clientId: authClientId
+          // [BICEP-07] Tells Easy Auth to use the MI clientId env var as a federated client credential instead of a real secret.
           clientSecretSettingName: 'OVERRIDE_USE_MI_FIC_ASSERTION_CLIENTID'
         }
         login: {

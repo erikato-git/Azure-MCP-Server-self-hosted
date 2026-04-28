@@ -64,6 +64,7 @@ var allScopes = union([
   }
 ], customScopes)
 
+// [BICEP-04] Pre-authorized client IDs (e.g. VS Code app aebc6443-...) skip the admin-consent prompt for the default scope.
 // Generate pre-authorized applications configuration
 var preAuthorizedApps = [for clientId in preAuthorizedClientIds: {
   appId: clientId
@@ -84,6 +85,7 @@ var allRedirectUris = !empty(authRedirectUri) ? union([authRedirectUri], redirec
 var defaultIdentifierUri = 'api://${appUniqueName}-${uniqueString(subscription().id, resourceGroup().id, appUniqueName)}'
 var finalIdentifierUri = !empty(identifierUri) ? identifierUri : defaultIdentifierUri
 
+// [BICEP-02] Entra app registration: the OAuth2 audience that Easy Auth and the OBO call both target.
 // Create the application registration
 resource appRegistration 'Microsoft.Graph/applications@v1.0' = {
   uniqueName: appUniqueName
@@ -104,6 +106,7 @@ resource appRegistration 'Microsoft.Graph/applications@v1.0' = {
       enableIdTokenIssuance: true
     }
   }
+  // [BICEP-03] Declare the delegated downstream APIs the app may request via OBO (Graph User.Read shown; ARM is consented dynamically).
   requiredResourceAccess: [
     {
       // Microsoft Graph permissions
@@ -125,6 +128,7 @@ resource appServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
   tags: tagStrings
 }
 
+// [BICEP-05] Federated Identity Credential: the linchpin that lets MI-issued tokens stand in as the Entra app's client credential during OBO.
 // Create federated identity credential for the user-assigned managed identity (if provided)
 resource federatedIdentityCredential 'Microsoft.Graph/applications/federatedIdentityCredentials@v1.0' = if (!empty(managedIdentityClientId) && !empty(managedIdentityPrincipalId)) {
   name: '${appRegistration.uniqueName}/mcp-function-managed-identity'

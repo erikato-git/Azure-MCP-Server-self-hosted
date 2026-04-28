@@ -17,6 +17,7 @@ public sealed class ApplicationInsightsReportingTools
     private static readonly string[] ValidDataTypes =
         ["requests", "exceptions", "dependencies", "traces", "customEvents", "availabilityResults", "pageViews", "all"];
 
+    // [FLOW-05] Tool entry point: MCP SDK dispatches to this method after deserializing tool arguments.
     [McpServerTool, Description("Generate an aggregated summary report from an Application Insights resource in a resource group. Auto-discovers the Application Insights resource and the subscription if not provided. Supports data types: requests, exceptions, dependencies, traces, customEvents, availabilityResults, pageViews, or all.")]
     public static async Task<string> GetApplicationInsightsReport(
         IHttpContextAccessor httpContextAccessor,
@@ -27,17 +28,20 @@ public sealed class ApplicationInsightsReportingTools
         [Description("The Azure subscription ID. If omitted, the subscription is auto-discovered from the resource group name.")] string subscriptionId = "",
         [Description("Language for the report summary: 'en' for English (default) or 'da' for Danish.")] string language = "en")
     {
+        // [FLOW-06] Reject unknown data types before any auth or network work.
         if (!ValidDataTypes.Contains(dataType))
             return OboCredentialHelper.FailJson(
                 $"Invalid dataType '{dataType}'.",
                 $"Valid values are: {string.Join(", ", ValidDataTypes)}");
 
+        // [FLOW-07] Normalize and validate the time-range unit ("hours" or "days").
         var unit = timeRangeUnit.ToLower();
         if (unit != "hours" && unit != "days")
             return OboCredentialHelper.FailJson(
                 $"Invalid timeRangeUnit '{timeRangeUnit}'.",
                 "Valid values are: 'hours' or 'days'.");
 
+        // [FLOW-08] Build the OnBehalfOfCredential from the inbound user bearer token (see OboCredentialHelper).
         var (credential, errorJson) = OboCredentialHelper.Create(httpContextAccessor);
         if (credential is null) return errorJson!;
 
@@ -48,6 +52,7 @@ public sealed class ApplicationInsightsReportingTools
 
         try
         {
+            // [FLOW-09] Trigger the OBO exchange: user token -> ARM-scoped downstream token via MI federated assertion.
             var armToken = await credential.GetTokenAsync(
                 new TokenRequestContext(["https://management.azure.com/.default"]),
                 CancellationToken.None);
@@ -56,6 +61,7 @@ public sealed class ApplicationInsightsReportingTools
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", armToken.Token);
 
+            // [FLOW-10] If no subscription was supplied, scan the user's accessible subs for the matching RG.
             if (string.IsNullOrWhiteSpace(subscriptionId))
             {
                 var discovered = await FindSubscriptionIdAsync(httpClient, resourceGroupName);
@@ -72,6 +78,7 @@ public sealed class ApplicationInsightsReportingTools
             var rgId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
             var resourceGroup = armClient.GetResourceGroupResource(rgId);
 
+            // [FLOW-11] Enumerate Application Insights components inside the target resource group.
             var applicationInsightsResources = new List<(string Name, string ResourceId)>();
             await foreach (var resource in resourceGroup.GetGenericResourcesAsync(
                 filter: "resourceType eq 'microsoft.insights/components'"))
@@ -105,7 +112,7 @@ public sealed class ApplicationInsightsReportingTools
 
             var (aiName, aiResourceId) = applicationInsightsResources[0];
 
-            // Resolve the linked Log Analytics workspace resource ID from the Application Insights component.
+            // [FLOW-12] Resolve the linked Log Analytics workspace resource ID from the Application Insights component.
             var applicationInsightsComponentResponse = await httpClient.GetAsync(
                 $"https://management.azure.com{aiResourceId}?api-version=2020-02-02");
             applicationInsightsComponentResponse.EnsureSuccessStatusCode();
@@ -119,10 +126,12 @@ public sealed class ApplicationInsightsReportingTools
                 ? ValidDataTypes[..^1]
                 : (string[])[dataType];
 
+            // [FLOW-13] Run one KQL query per requested data type and collect the per-type aggregates.
             var reports = new Dictionary<string, object?>();
             foreach (var type in typesToQuery)
                 reports[type] = await QueryDataType(httpClient, workspaceResourceId, type.ToLower(), timeRangeValue, unit, isDanish);
 
+            // [FLOW-15] Serialize the aggregated multi-type report back to the MCP client as indented JSON.
             return JsonSerializer.Serialize(new
             {
                 applicationInsightsResource = aiName,
@@ -166,6 +175,7 @@ public sealed class ApplicationInsightsReportingTools
         }
     }
 
+    // [FLOW-14] POST KQL query to the workspace via ARM proxy using the OBO-acquired bearer token.
     private static async Task<QueryResult> RunKql(
         HttpClient client, string workspaceResourceId, string kql, int timeRangeValue, string timeRangeUnit)
     {

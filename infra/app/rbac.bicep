@@ -87,6 +87,7 @@ resource tableRoleAssignment_User 'Microsoft.Authorization/roleAssignments@2022-
   }
 }
 
+// [BICEP-11] Monitoring Metrics Publisher on App Insights for the MI - lets the host export OTel telemetry; the OBO user must separately hold Monitoring Reader to query.
 // Role assignment for Application Insights - Managed Identity
 resource appInsightsRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(applicationInsights.id, managedIdentityPrincipalId, monitoringRoleDefinitionId) // Use managed identity ID
