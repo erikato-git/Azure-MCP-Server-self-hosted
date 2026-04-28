@@ -9,7 +9,7 @@ This project gives companies a fully customizable AI assistant — powered by Cl
 - [Who Is This For?](#who-is-this-for)
 - [Security: Data Stays in Company Control](#security-data-stays-in-company-control)
 - [Tools Already in Place](#what-can-it-do-today)
-- [Build Customized Azure Tools for the Company](#build-custom-azure-tools--made-for-the-companys-needs)
+- [Ideas for Customized Azure Tools](#build-custom-azure-tools--made-for-the-companys-needs)
 - [How Does It Work?](#how-does-it-work-the-short-version)
 
 ---
@@ -124,7 +124,7 @@ These tools give anyone a plain-language view of what is running in Azure:
 
 ---
 
-## Build Customized Azure Tools for the Company
+## Ideas for Customized Azure Tools
 
 The tools above are just the beginning. A development team can build new tools that connect to any Azure service or internal system. Here are some ideas focused on IT operations:
 
