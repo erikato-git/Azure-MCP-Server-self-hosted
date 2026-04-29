@@ -35,7 +35,7 @@ builder.Services.AddMcpServer()
     .WithTools<WeatherTools>()
     .WithTools<UserInfoTools>()
     .WithTools<ListResourceGroupServicesTools>()
-    .WithTools<ApplicationInsightsReportingTools>();
+    .WithTools<ApplicationInsightsTools>();
 
 builder.Logging.AddConsole(options =>
 {

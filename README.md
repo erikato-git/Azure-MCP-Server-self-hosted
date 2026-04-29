@@ -190,13 +190,12 @@ The original technical README with setup instructions, deployment steps, and arc
 
 ## Architecture Diagrams (for developers)
 
-Three draw.io diagrams covering different levels of detail are available in [docs/architecture/](docs/architecture/). These are primarily intended for developers contributing to or extending the project.
+Architecture diagrams are available in [docs/architecture/](docs/architecture/). These are primarily intended for developers contributing to or extending the project.
 
 | Diagram | What it shows |
 |---|---|
-| [01 — System Overview](docs/architecture/01-system-overview.excalidraw) | Bird's-eye view of the full system |
-| [02 — Authentication and OBO Flow](docs/architecture/02-auth-obo-flow.excalidraw) | How authentication works and how the server gets delegated access to Azure APIs |
-| [03 — Infrastructure Topology](docs/architecture/03-infrastructure-topology.excalidraw) | Azure resource layout — what is deployed and how it connects |
+| [Cloud System Architecture](docs/architecture/Cloud%20System%20Architecture.svg) | Bird's-eye view of the full system (SVG — opens in browser or VS Code) |
+| [Application Insights Tool Flow](docs/architecture/application-insights-flow-sequence.excalidraw) | How the Application Insights report tool works end to end |
 
-Open the files with the **Excalidraw VS Code extension** (`pomdtr.excalidraw-editor`) — recommended in this repo's extension list. See [docs/architecture/cloud-architecture-diagrams.md](docs/architecture/cloud-architecture-diagrams.md) for the full index and colour legend.
+The `.drawio` source for the system architecture is at [docs/architecture/Cloud System Architecture.drawio](docs/architecture/Cloud%20System%20Architecture.drawio). Open `.excalidraw` files with the **Excalidraw VS Code extension** (`pomdtr.excalidraw-editor`) — recommended in this repo's extension list.
 

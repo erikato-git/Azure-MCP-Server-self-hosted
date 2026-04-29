@@ -1,10 +1,10 @@
 {
-	    "servers": {
+    "servers": {
         "local-mcp-server": {
             "url": "http://localhost:8080/mcp",
 			"type": "http"
         },
-        "remote-mcp-server": {
+        "azure-mcp-server": {
             "type": "http",
             "url": "https://func-mcp-tbgbe7twyg3ii.azurewebsites.net/mcp"
         }
