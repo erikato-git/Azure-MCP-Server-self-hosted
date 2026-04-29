@@ -22,9 +22,9 @@ This project extends the official Microsoft Azure open-source sample [mcp-sdk-fu
 
 ## What Problem Does This Solve?
 
-Most teams already have a lot of tools: Azure Portal, monitoring dashboards, log systems, alerting. The problem is that getting answers out of those tools takes time and expertise. It requires knowing where to look, how to navigate, and often how to write complex queries just to answer a simple question.
+❌ Most teams already have a lot of tools: Azure Portal, monitoring dashboards, log systems, alerting. Getting answers out of those tools takes time and expertise — it requires knowing where to look, how to navigate, and often how to write complex queries just to answer a simple question.
 
-This project connects an AI assistant directly to an Azure environment — so instead of clicking through dashboards, just ask.
+✅ This project connects an AI assistant directly to an Azure environment — so instead of clicking through dashboards, just ask.
 
 > *"How is our production app performing right now?"*
 > *"Were there any errors in the payment service in the last 24 hours?"*
@@ -49,13 +49,13 @@ This is one of the most important things to understand about this project. It is
 
 Here is what that means in plain terms:
 
-- **Only company employees can use it.** The server requires users to log in with their company Microsoft account before anything happens. No anonymous access, ever.
+- ✅ **Only company employees can use it.** The server requires users to log in with their company Microsoft account before anything happens. No anonymous access, ever.
 
-- **Each person sees only what they are allowed to see.** The AI does not have a powerful admin account of its own. It acts on behalf of the logged-in user — using that person's own Azure permissions. If someone cannot see a resource in Azure Portal, the AI cannot see it either.
+- ✅ **Each person sees only what they are allowed to see.** The AI does not have a powerful admin account of its own. It acts on behalf of the logged-in user — using that person's own Azure permissions. If someone cannot see a resource in Azure Portal, the AI cannot see it either.
 
-- **Data never leaves the Azure environment.** Queries go to the Azure resources and come back to the user's screen. They do not pass through any external service.
+- ✅ **Data never leaves the Azure environment.** Queries go to the Azure resources and come back to the user's screen. They do not pass through any external service.
 
-- **No passwords stored anywhere.** Authentication is handled entirely through short-lived security tokens — the same technology used across all Microsoft enterprise products.
+- ✅ **No passwords stored anywhere.** Authentication is handled entirely through short-lived security tokens — the same technology used across all Microsoft enterprise products.
 
 Think of it this way: the AI assistant carries the same keycard as the person using it. It can only open the doors that person is allowed to open.
 
@@ -106,10 +106,10 @@ And get back a plain-language answer like:
 
 **Who benefits:**
 
-- **Developers** can easily let AI extract operational insights and troubleshoot incidents without leaving their coding environment
-- **Team leads** can check service health without needing Azure Portal access
-- **On-call engineers** can quickly assess an incident by writing prompts (not queries)
-- **Project managers** get operational insights and stay informed on incidents in plain language, without needing technical expertise
+- ✅ **Developers** can easily let AI extract operational insights and troubleshoot incidents without leaving their coding environment
+- ✅ **Team leads** can check service health without needing Azure Portal access
+- ✅ **On-call engineers** can quickly assess an incident by writing prompts (not queries)
+- ✅ **Project managers** get operational insights and stay informed on incidents in plain language, without needing technical expertise
 
 > The tool supports both English and Danish responses — just ask in the language you prefer.
 
@@ -185,4 +185,18 @@ The server is built on an open standard called **MCP (Model Context Protocol)**,
 ## Technical README
 
 The original technical README with setup instructions, deployment steps, and architecture details is available in [docs/readme-original.md](docs/readme-original.md).
+
+---
+
+## Architecture Diagrams (for developers)
+
+Three draw.io diagrams covering different levels of detail are available in [docs/architecture/](docs/architecture/). These are primarily intended for developers contributing to or extending the project.
+
+| Diagram | What it shows |
+|---|---|
+| [01 — System Overview](docs/architecture/01-system-overview.excalidraw) | Bird's-eye view of the full system |
+| [02 — Authentication and OBO Flow](docs/architecture/02-auth-obo-flow.excalidraw) | How authentication works and how the server gets delegated access to Azure APIs |
+| [03 — Infrastructure Topology](docs/architecture/03-infrastructure-topology.excalidraw) | Azure resource layout — what is deployed and how it connects |
+
+Open the files with the **Excalidraw VS Code extension** (`pomdtr.excalidraw-editor`) — recommended in this repo's extension list. See [docs/architecture/cloud-architecture-diagrams.md](docs/architecture/cloud-architecture-diagrams.md) for the full index and colour legend.
 
